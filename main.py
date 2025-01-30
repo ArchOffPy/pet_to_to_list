@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
@@ -50,6 +51,9 @@ def delete_task(task_id: int):
     tasks = [task for task in tasks if task.id == task_id]
     return {"message": "Task deleted"}
 
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
 
 
 
