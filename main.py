@@ -20,17 +20,31 @@ tasks: List[Task] = []
 def get_tasks():
     return tasks
 
+#create task
 @app.post('/tasks', response_model=Task)
 def create_task(task: Task):
     tasks.append(task)
     return task
 
+# get one task
 @app.get('/tasks/{id}', response_model=Task)
 def get_task(task_id: int):
     for task in tasks:
         if task.id == task_id:
             return task
     return {"error": "Task not found"}
+
+# update task
+@app.put('/tasks/{task_id}', response_model=Task)
+def update_task(task_id: int, updated_task: Task):
+    for i, task in enumerate(tasks):
+        if task.id == task_id:
+            tasks[i] = updated_task
+            return updated_task
+    return {"error": "Task not found"}
+
+
+
 
 
 
