@@ -15,4 +15,19 @@ class Task(BaseModel):
 # storage
 tasks: List[Task] = []
 
+#get all tasks
+@app.get('/tasks', response_model=List[Task])
+def get_tasks():
+    return tasks
+
+@app.post('/tasks', response_model=Task)
+def create_task(task: Task):
+    tasks.append(task)
+    return task
+
+
+
+
+
+
 
