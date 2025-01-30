@@ -43,9 +43,12 @@ def update_task(task_id: int, updated_task: Task):
             return updated_task
     return {"error": "Task not found"}
 
-
-
-
+#delete task
+@app.delete('/tasks/{task_id}', response_model=Task)
+def delete_task(task_id: int):
+    global tasks
+    tasks = [task for task in tasks if task.id == task_id]
+    return {"message": "Task deleted"}
 
 
 
