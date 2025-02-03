@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Task
+from models import Task, TaskUpdate
 
 
 app = FastAPI()
@@ -39,20 +39,25 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
     return task
 
 # update task
-@app.put('/tasks/{task_id}', response_model=Task)
-def update_task(task_id: int,
-                completed: Optional[bool] = None,
-                title: Optional[str] = None,
-                description: Optional[str] = None,
-                ):
-    for i, task in enumerate(tasks):
-        if task.id == task_id:
-            tasks[i].title = title or task.title
-            tasks[i].description = description or task.description
-            if completed is not None:  # Чётко проверяем True/False
-                tasks[i].completed = completed
-            return tasks[i]
-    return {"error": "Task not found"}
+@app.put("/tasks/{task_id}", response_model=Task)
+def update_task(task_id: int, updated_task: TaskUpdate, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if updated_task.title is not None:
+        task.title = updated_task.title
+    if updated_task.description is not None:
+        task.description = updated_task.description
+    if updated_task.completed is not None:
+        task.completed = updated_task.completed
+
+    db.commit()
+    db.refresh(task)
+
+    return task
+
 
 #delete task
 @app.delete('/tasks/{task_id}', response_model=Task)
