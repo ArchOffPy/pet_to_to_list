@@ -31,12 +31,12 @@ def create_task(task: Task):
     return task
 
 # get one task
-@app.get('/tasks/{id}', response_model=Task)
-def get_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            return task
-    return {"error": "Task not found"}
+@app.get("/tasks/{task_id}", response_model=Task)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
 
 # update task
 @app.put('/tasks/{task_id}', response_model=Task)
