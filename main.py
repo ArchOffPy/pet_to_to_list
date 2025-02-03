@@ -1,25 +1,28 @@
 import uvicorn
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Depends, HTTPException
+# from pydantic import BaseModel
 from typing import List, Optional
+from sqlalchemy.orm import Session
+from database import get_db
+from models import Task
 
 
 app = FastAPI()
 
 # Create model data
-class Task(BaseModel):
-    id: int
-    title: str
-    description: str = None
-    completed: bool = False
+# class Task(BaseModel):
+#     id: int
+#     title: str
+#     description: str = None
+#     completed: bool = False
 
 # storage
-tasks: List[Task] = []
+# tasks: List[Task] = []
 
 #get all tasks
 @app.get('/tasks', response_model=List[Task])
-def get_tasks():
-    return tasks
+def get_tasks(db: Session = Depends(get_db)):
+    return db.query(Task).all()
 
 #create task
 @app.post('/tasks', response_model=Task)
