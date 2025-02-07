@@ -16,10 +16,11 @@ def get_tasks(db: Session = Depends(get_db)):
 #create task
 @app.post("/tasks", response_model=TaskResponse)
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
-    db.add(task)
+    new_task = Task(**task.model_dump())  # ✅ Создаем SQLAlchemy-объект
+    db.add(new_task)
     db.commit()
-    db.refresh(task)
-    return task
+    db.refresh(new_task)
+    return new_task
 
 # get one task
 @app.get("/tasks/{task_id}", response_model=TaskResponse)
